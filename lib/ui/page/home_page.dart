@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:iptv/provider/settings_provider.dart';
 import 'package:iptv/ui/page/country_page.dart';
 import 'package:iptv/ui/page/settings_page.dart';
 import 'package:iptv/ui/widget/channel_search_delegate.dart';
 import 'package:iptv/ui/widget/global_loading_widget.dart';
-import 'package:provider/provider.dart';
 
-import '../../provider/channel_provider.dart';
+import '../../heritage/channel.dart';
 import '../widget/channel_list_tile.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,21 +22,21 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    final settingsProvider = context.read<SettingsProvider>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChannelProvider>().getChannels();
+      InheritedChannel.of(context).getChannels();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final channels = context.select((ChannelProvider value) => value.channels);
-    final loading = context.select((ChannelProvider value) => value.loading);
-    final allChannels = context.select((ChannelProvider value) => value.allChannels);
-    final allCategories = context.select((ChannelProvider value) => value.allCategories);
-    final category = context.select((ChannelProvider value) => value.category);
-    final country = context.select((ChannelProvider value) => value.country);
+    final channels = InheritedChannel.of(context).channels;
+    final loading = InheritedChannel.of(context).loading;
+    final allChannels = InheritedChannel.of(context).allChannels;
+    final allCategories = InheritedChannel.of(context).allCategories;
+    final category = InheritedChannel.of(context).category;
+    final country = InheritedChannel.of(context).country;
+
     return GlobalLoadingWidget(
       child: OrientationBuilder(
         builder: (context, orientation) {
@@ -100,9 +98,8 @@ class _HomePageState extends State<HomePage> {
                     }
                     tabListener = () {
                       if(tabController.indexIsChanging) {
-                        context
-                            .read<ChannelProvider>()
-                            .selectCategory(category: allCategories[tabController.index]);
+                        InheritedChannel.of(context)
+                            .selectCategory(allCategories[tabController.index]);
                         scrollController.jumpTo(0);
                       }
                     };
@@ -118,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                                   replacement: Center(
                                     child: FilledButton(
                                       onPressed: () {
-                                        context.read<ChannelProvider>().getChannels();
+                                        InheritedChannel.of(context).getChannels();
                                       },
                                       child: const Text('Try Again'),
                                     ),
@@ -209,9 +206,7 @@ class _HomePageState extends State<HomePage> {
                         selectedTileColor: Theme.of(context).colorScheme.onPrimary,
                         selectedColor: Theme.of(context).colorScheme.primary,
                         onTap: () {
-                          context
-                              .read<ChannelProvider>()
-                              .selectCategory(category: item);
+                          InheritedChannel.of(context).selectCategory(item);
                           scrollController.jumpTo(0);
                         },
                       );
@@ -228,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                           replacement: Center(
                             child: FilledButton(
                               onPressed: () {
-                                context.read<ChannelProvider>().getChannels();
+                                InheritedChannel.of(context).getChannels();
                               },
                               child: const Text('Try Again'),
                             ),

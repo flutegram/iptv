@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:iptv/provider/settings_provider.dart';
 import 'package:iptv/ui/page/select_m3u8_page.dart';
 import 'package:iptv/ui/page/select_seed_color_page.dart';
 import 'package:iptv/ui/widget/global_loading_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../provider/channel_provider.dart';
+import '../../heritage/channel.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -33,8 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUrl =
-        context.select((ChannelProvider value) => value.currentUrl);
+    final currentUrl = InheritedChannel.of(context).currentUrl;
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: GlobalLoadingWidget(
@@ -53,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ListTile(
               leading: const Icon(Icons.refresh),
               onTap: () {
-                context.read<ChannelProvider>().getChannels();
+                InheritedChannel.of(context).getChannels();
               },
               title: const Text('Refresh Channels'),
             ),

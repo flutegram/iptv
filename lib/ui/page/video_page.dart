@@ -6,13 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../common/logger.dart';
+import '../../heritage/channel.dart';
 import '../../model/channel.dart';
-import '../../provider/channel_provider.dart';
 
 class VideoPage extends StatefulWidget {
   const VideoPage({super.key});
@@ -41,10 +40,8 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ChannelProvider>();
-    final channel =
-        context.select((ChannelProvider value) => value.currentChannel)!;
-    final channels = context.select((ChannelProvider value) => value.channels);
+    final channel = InheritedChannel.of(context).currentChannel!;
+    final channels = InheritedChannel.of(context).channels;
     logger.i('video url is ${channel.url}');
     if (lastUrl != channel.url) {
       setState(() {
@@ -148,9 +145,9 @@ class _VideoPageState extends State<VideoPage> {
           },
           onHorizontalDragEnd: (details) {
             if ((details.primaryVelocity ?? 0) > 10) {
-              provider.previousChannel();
+              InheritedChannel.of(context).previousChannel();
             } else if ((details.primaryVelocity ?? 0) < -10) {
-              provider.nextChannel();
+              InheritedChannel.of(context).nextChannel();
             }
           },
           child: KeyboardListener(
@@ -158,9 +155,9 @@ class _VideoPageState extends State<VideoPage> {
             onKeyEvent: (event) {
               final key = event.logicalKey;
               if (key == LogicalKeyboardKey.arrowUp) {
-                provider.previousChannel();
+                InheritedChannel.of(context).previousChannel();
               } else if (key == LogicalKeyboardKey.arrowDown) {
-                provider.nextChannel();
+                InheritedChannel.of(context).nextChannel();
               }
             },
             child: Scaffold(
@@ -275,9 +272,9 @@ class _VideoPageState extends State<VideoPage> {
             : null,
         body: OrientationBuilder(builder: (context, orientation) {
           if (orientation == Orientation.portrait) {
-            return portraitPage(provider, videoPlayer, channels, channel);
+            return portraitPage(videoPlayer, channels, channel);
           }
-          return landscapePage(provider, videoPlayer, channels, channel);
+          return landscapePage(videoPlayer, channels, channel);
         }),
       );
     }
@@ -319,7 +316,7 @@ class _VideoPageState extends State<VideoPage> {
     fullscreenInfoDismissTimer?.cancel();
   }
 
-  Widget landscapePage(ChannelProvider provider, Widget videoPlayer,
+  Widget landscapePage(Widget videoPlayer,
       List<Channel> channels, Channel channel) {
     return SafeArea(
       child: Row(
@@ -366,7 +363,7 @@ class _VideoPageState extends State<VideoPage> {
                   children: [
                     FilledButton(
                         onPressed: () {
-                          provider.setFavorite(channel.id, !channel.isFavorite);
+                          InheritedChannel.of(context).setFavorite(channel.id, !channel.isFavorite);
                         },
                         child: Icon(
                           channel.isFavorite ? Icons.star : Icons.star_border,
@@ -376,7 +373,7 @@ class _VideoPageState extends State<VideoPage> {
                     ),
                     FilledButton(
                         onPressed: () {
-                          provider.previousChannel();
+                          InheritedChannel.of(context).previousChannel();
                         },
                         child: const Row(
                           children: [
@@ -389,7 +386,7 @@ class _VideoPageState extends State<VideoPage> {
                     ),
                     FilledButton(
                         onPressed: () {
-                          provider.nextChannel();
+                          InheritedChannel.of(context).nextChannel();
                         },
                         child: const Row(
                           children: [
@@ -436,7 +433,7 @@ class _VideoPageState extends State<VideoPage> {
                             Theme.of(context).colorScheme.onPrimary,
                         selectedColor: Theme.of(context).colorScheme.primary,
                         onTap: () {
-                          provider.setCurrentChannel(item);
+                          InheritedChannel.of(context).setCurrentChannel(item);
                         },
                         leading: CachedNetworkImage(
                           width: 40,
@@ -478,7 +475,7 @@ class _VideoPageState extends State<VideoPage> {
     );
   }
 
-  Widget portraitPage(ChannelProvider provider, Widget videoPlayer,
+  Widget portraitPage(Widget videoPlayer,
           List<Channel> channels, Channel channel) =>
       SafeArea(
         top: false,
@@ -501,7 +498,7 @@ class _VideoPageState extends State<VideoPage> {
                     children: [
                       FilledButton(
                           onPressed: () {
-                            provider.setFavorite(
+                            InheritedChannel.of(context).setFavorite(
                                 channel.id, !channel.isFavorite);
                           },
                           child: Icon(
@@ -509,7 +506,7 @@ class _VideoPageState extends State<VideoPage> {
                           )),
                       FilledButton(
                           onPressed: () {
-                            provider.previousChannel();
+                            InheritedChannel.of(context).previousChannel();
                           },
                           child: const Row(
                             children: [
@@ -518,7 +515,7 @@ class _VideoPageState extends State<VideoPage> {
                           )),
                       FilledButton(
                           onPressed: () {
-                            provider.nextChannel();
+                            InheritedChannel.of(context).nextChannel();
                           },
                           child: const Row(
                             children: [
@@ -550,7 +547,7 @@ class _VideoPageState extends State<VideoPage> {
                     selectedTileColor: Theme.of(context).colorScheme.onPrimary,
                     selectedColor: Theme.of(context).colorScheme.primary,
                     onTap: () {
-                      provider.setCurrentChannel(item);
+                      InheritedChannel.of(context).setCurrentChannel(item);
                     },
                     leading: CachedNetworkImage(
                       width: 40,

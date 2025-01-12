@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../common/data.dart';
-import '../../provider/channel_provider.dart';
+import '../../heritage/channel.dart';
 
 class SelectM3u8Page extends StatefulWidget {
   const SelectM3u8Page({super.key});
@@ -28,11 +27,9 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<ChannelProvider>();
-    final currentUrl =
-        context.select((ChannelProvider value) => value.currentUrl);
-    final m3u8UrlList =
-        context.select((ChannelProvider value) => value.m3u8UrlList);
+    final currentUrl = InheritedChannel.of(context).currentUrl;
+    final m3u8UrlList = InheritedChannel.of(context).m3u8UrlList;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Select m3u url')),
       body: Stack(
@@ -46,7 +43,7 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
                         subtitle: TextField(
                           controller: textEditingController,
                           onSubmitted: (_) async {
-                            await onImportPress(provider);
+                            await onImportPress();
                           },
                         ),
                       ),
@@ -55,13 +52,13 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
                         children: [
                           FilledButton(
                               onPressed: () async {
-                                await onImportPress(provider);
+                                await onImportPress();
                               },
                               child: const Text('Import')),
                           FilledButton(
                               onPressed: () async {
                                 FocusManager.instance.primaryFocus?.unfocus();
-                                await provider.resetM3UContent();
+                                await InheritedChannel.of(context).resetM3UContent();
                                 if (mounted) {
                                   ScaffoldMessenger.of(this.context)
                                       .showSnackBar(const SnackBar(
@@ -77,14 +74,14 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
                       subtitle: TextField(
                         controller: textEditingController,
                         onSubmitted: (_) async {
-                          await onImportPress(provider);
+                          await onImportPress();
                         },
                       ),
                       trailing: Wrap(
                         children: [
                           FilledButton(
                               onPressed: () async {
-                                await onImportPress(provider);
+                                await onImportPress();
                               },
                               child: const Text('Import')),
                           const SizedBox(
@@ -93,7 +90,7 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
                           FilledButton(
                               onPressed: () async {
                                 FocusManager.instance.primaryFocus?.unfocus();
-                                await provider.resetM3UContent();
+                                await InheritedChannel.of(context).resetM3UContent();
                                 if (mounted) {
                                   ScaffoldMessenger.of(this.context)
                                       .showSnackBar(const SnackBar(
@@ -115,7 +112,7 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
                           autofocus: url == currentUrl,
                           onChanged: (value) {
                             if (value != null) {
-                              provider.importFromUrl(value);
+                              InheritedChannel.of(context).importFromUrl(value);
                             }
                           }),
                     ),
@@ -142,7 +139,7 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
                                       ],
                                     ));
                             if (result == true) {
-                              provider.deleteM3u8Url(url);
+                              InheritedChannel.of(context).deleteM3u8Url(url);
                             }
                           },
                           icon: const Icon(
@@ -154,7 +151,7 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
             ],
           ),
           Visibility(
-              visible: context.select((ChannelProvider value) => value.loading),
+              visible: InheritedChannel.of(context).loading,
               replacement: const SizedBox(
                 height: 4,
               ),
@@ -164,10 +161,10 @@ class _SelectM3u8PageState extends State<SelectM3u8Page> {
     );
   }
 
-  Future<void> onImportPress(ChannelProvider provider) async {
+  Future<void> onImportPress() async {
     FocusManager.instance.primaryFocus?.unfocus();
     final text = textEditingController.text.trim();
-    if (await provider.importFromUrl(text)) {
+    if (await InheritedChannel.of(context).importFromUrl(text)) {
       if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Import success')));

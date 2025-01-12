@@ -1,9 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iptv/model/channel.dart';
-import 'package:iptv/provider/channel_provider.dart';
-import 'package:provider/provider.dart';
 
+import '../../heritage/channel.dart';
 import '../page/video_page.dart';
 
 class ChannelListTile extends StatefulWidget {
@@ -42,9 +41,7 @@ class _ChannelListTileState extends State<ChannelListTile> {
     return InkWell(
       focusColor: Colors.transparent,
       onTap: () {
-        context
-            .read<ChannelProvider>()
-            .setCurrentChannel(widget.item);
+        InheritedChannel.of(context).setCurrentChannel(widget.item);
         if (url == null || url.isEmpty) {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("This channel can't be played now")));
@@ -54,9 +51,7 @@ class _ChannelListTileState extends State<ChannelListTile> {
         }
       },
       onLongPress: () {
-        context
-            .read<ChannelProvider>()
-            .setFavorite(widget.item.id, !isFavorite);
+        InheritedChannel.of(context).setFavorite(widget.item.id, !isFavorite);
       },
       child: Builder(builder: (context) {
         final hasFocus = Focus.of(context).hasFocus;
@@ -115,9 +110,7 @@ class _ChannelListTileState extends State<ChannelListTile> {
                 child: InkWell(
                   canRequestFocus: false,
                   onTap: () {
-                    context
-                        .read<ChannelProvider>()
-                        .setFavorite(widget.item.id, !isFavorite);
+                    InheritedChannel.of(context).setFavorite(widget.item.id, !isFavorite);
                   },
                   child: Padding(
                       padding: const EdgeInsets.all(4),

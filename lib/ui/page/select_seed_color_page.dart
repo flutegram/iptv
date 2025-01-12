@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:iptv/provider/settings_provider.dart';
-import 'package:provider/provider.dart';
+
+import '../../heritage/setting.dart';
+
+const seedColorMap = {
+  'deepPurple': Colors.deepPurple,
+  'indigo': Colors.indigo,
+  'blue': Colors.blue,
+  'green': Colors.green,
+  'lime': Colors.lime,
+  'red': Colors.red,
+  'pink': Colors.pink,
+  'orange': Colors.orange,
+  'cyan': Colors.cyan,
+  'teal': Colors.teal,
+};
 
 class SelectSeedColorPage extends StatelessWidget {
   const SelectSeedColorPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<SettingsProvider>();
-    final seedColor =
-        context.select((SettingsProvider value) => value.seedColor);
-    final colors = SettingsProvider.seedColorMap.entries.toList();
+    final seedColor = InheritedSetting.of(context).seedColor;
+    final colors = seedColorMap.entries.toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Select Theme Color')),
       body: ListView.builder(
         itemBuilder: (_, index) {
           final color = colors[index];
-          return RadioListTile(
+          return RadioListTile<int>(
               title: Row(
                 children: [
                   Container(
@@ -36,7 +47,7 @@ class SelectSeedColorPage extends StatelessWidget {
               autofocus: seedColor.value == color.value.value,
               onChanged: (value) {
                 if (value != null) {
-                  provider.setSeedColor(Color(value));
+                  InheritedSetting.of(context).setSeedColor(Color(value));
                 }
               });
         },

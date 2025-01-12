@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../provider/channel_provider.dart';
+import '../../heritage/channel.dart';
 import 'channel_list_tile.dart';
 
 class ChannelSearchDelegate extends SearchDelegate<String> {
@@ -31,7 +29,7 @@ class ChannelSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
 
-    final channels = context.select((ChannelProvider value) => value.allChannels);
+    final channels = InheritedChannel.of(context).allChannels;
     final results = channels.where((item) => item.name.toLowerCase().contains(query.toLowerCase())).toList();
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     return GridView.builder(
@@ -49,7 +47,7 @@ class ChannelSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final channels = context.select((ChannelProvider value) => value.allChannels);
+    final channels = InheritedChannel.of(context).allChannels;
     final suggestions = channels.where((item) => item.name.toLowerCase().startsWith(query.toLowerCase())).toList();
 
     return ListView.builder(

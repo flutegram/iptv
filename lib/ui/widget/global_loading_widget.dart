@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:iptv/provider/channel_provider.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:provider/provider.dart';
+
+import '../../heritage/channel.dart';
 
 class GlobalLoadingWidget extends StatelessWidget {
   final Widget child;
@@ -13,7 +13,7 @@ class GlobalLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select((ChannelProvider value) => value.loading);
+    final isLoading = InheritedChannel.of(context).loading;
 
     return Stack(
       children: [

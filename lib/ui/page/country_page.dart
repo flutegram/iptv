@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../provider/channel_provider.dart';
+import '../../heritage/channel.dart';
 
 class CountryPage extends StatelessWidget {
   const CountryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final language = context.select((ChannelProvider value) => value.country);
-    final allCountries = context.select((ChannelProvider value) => value.allCountries);
+    final language = InheritedChannel.of(context).country;
+    final allCountries = InheritedChannel.of(context).allCountries;
     return Scaffold(
       appBar: AppBar(title: const Text('Channel Country/Region')),
       body: GridView.builder(
@@ -38,7 +37,7 @@ class CountryPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             onTap: () {
-              context.read<ChannelProvider>().selectCountry(country: item);
+              InheritedChannel.of(context).selectCountry(item);
               Navigator.of(context).pop();
             },
           );
