@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main  # Trigger on pushes to the main branch
-  pull_request:
-    branches:
-      - main  # Optional: Trigger on pull requests
 
 jobs:
   build:
@@ -34,17 +31,13 @@ jobs:
     - name: Build APK
       run: flutter build apk --release
 
-    - name: Build App Bundle
-      run: flutter build appbundle --release
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
+    - name: Create GitHub Release and Upload APK
+      uses: ncipollo/release-action@v1
       with:
-        name: release-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
-
-    - name: Upload App Bundle
-      uses: actions/upload-artifact@v3
-      with:
-        name: release-aab
-        path: build/app/outputs/bundle/release/app-release.aab
+        artifacts: build/app/outputs/flutter-apk/app-release.apk
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: v1.0.0  # Replace with your desired version tag
+        name: Release v1.0.0
+        body: |
+          ### What's New
+          - Initial release of the APK.
